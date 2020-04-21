@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 import { StartComponent } from './pages/start/start.component';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    StartComponent
+    StartComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
