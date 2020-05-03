@@ -1,0 +1,13 @@
+<div class="form-check">
+  <input
+    class="form-check-input"
+    [ngClass]="classes"
+    type="checkbox"
+    [id]="componentId"
+    [checked]="status"
+    (change)="statusChange($event)"
+  />
+  <label class="form-check-label" [for]="componentId">
+    {{ labelText }}
+  </label>
+</div>

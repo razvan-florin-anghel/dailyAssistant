@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-9">
+    <form>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Add team member</label>
+        <input
+          type="email"
+          class="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="emailHelp"
+          [(ngModel)]="member"
+          [ngModelOptions]="{ standalone: true }"
+        />
+      </div>
+      <button (click)="addTeamMember()" class="btn btn-primary">
+        Add
+      </button>
+    </form>
+    <ul *ngIf="team" class="list-group list-group-flush mt-5">
+      <li *ngFor="let teamMember of team" class="list-group-item list-group-item-dark">{{teamMember}}</li>
+    </ul>
+  </div>
+  <div class="col-3">
+    <p>START</p>
+    <p>time</p>
+  </div>
+</div>
