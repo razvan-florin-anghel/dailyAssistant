@@ -8,6 +8,8 @@ import { StartComponent } from './pages/start/start.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CheckBoxComponent } from './shared/check-box/check-box.component';
 
@@ -20,6 +22,7 @@ import { CheckBoxComponent } from './shared/check-box/check-box.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     NgbModule,
     FormsModule
