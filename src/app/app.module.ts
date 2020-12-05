@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CheckBoxComponent } from './shared/check-box/check-box.component';
+import { NgxTimerModule } from 'ngx-timer';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { CheckBoxComponent } from './shared/check-box/check-box.component';
     BrowserAnimationsModule,
     AppRoutingModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    NgxTimerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
