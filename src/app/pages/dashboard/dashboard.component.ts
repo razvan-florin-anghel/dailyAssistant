@@ -11,6 +11,8 @@ import {
   countDownTimerTexts,
 } from "ngx-timer";
 
+import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
+
 @Component({
   selector: "app-home",
   templateUrl: "./dashboard.component.html",
@@ -20,9 +22,14 @@ import {
 export class DashboardComponent implements OnInit {
   team: Array<Member> = [];
   testConfig: any;
+  modalRef: NgbModalRef;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
+  @ViewChild("mymodal", { static: false }) private mymodal;
 
-  constructor(private _countdownTimerService: CountdownTimerService) {}
+  constructor(
+    private _countdownTimerService: CountdownTimerService,
+    private _modalService: NgbModal
+  ) {}
 
   ngOnInit(): void {
     this.testConfig = new countDownTimerConfigModel();
@@ -37,15 +44,36 @@ export class DashboardComponent implements OnInit {
    * @param $event
    */
   addTeamMember($event) {
-    if (!$event.target.value) {
+    let memberName = $event.target.value;
+    if (!memberName) {
       return false;
     }
-    let member: Member = { id: uuidv4(), name: $event.target.value };
+
+    if (this.isDupe(memberName)) {
+      setTimeout(() => {
+        this.modalRef = this._modalService.open(this.mymodal);
+      }, 100);
+    }
+
+    let member: Member = { id: uuidv4(), name: memberName };
     this.team.push(member);
   }
 
   clearInput() {
     this.teamMemberInput.nativeElement.value = "";
+  }
+
+  dismiss() {
+    this.modalRef.close();
+  }
+
+  /**
+   *
+   * @param memberName
+   */
+  isDupe(memberName: string): boolean {
+    let dupe = this.team.filter((member) => member.name === memberName);
+    return !!dupe.length;
   }
 
   /**
@@ -56,15 +84,19 @@ export class DashboardComponent implements OnInit {
       return member.id !== memberToBeRemoved.id;
     });
   }
-
+  /**
+   *
+   */
   startTimer() {
     this.stopTimer();
     let cdate = new Date();
-    console.log(cdate)
+    console.log(cdate);
     cdate.setSeconds(cdate.getSeconds() + 900);
     this._countdownTimerService.startTimer(cdate);
   }
-
+  /**
+   *
+   */
   stopTimer = () => {
     this._countdownTimerService.stopTimer();
   };

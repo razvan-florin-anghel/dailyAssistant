@@ -61,3 +61,29 @@
     <countdown-timer [countDownTimerConfig]="testConfig"></countdown-timer>
   </div>
 </div>
+
+<ng-template #mymodal let-modal>
+  <div class="modal-header">
+    <h4 class="text-danger" class="modal-title">Hi there!</h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modalRef.dismiss()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-danger">Hello!</p>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="modalRef.dismiss()"
+    >
+      Close
+    </button>
+  </div>
+</ng-template>
