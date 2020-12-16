@@ -11,15 +11,17 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { CheckBoxComponent } from './shared/check-box/check-box.component';
+import { CheckBoxComponent } from './shared/components/check-box/check-box.component';
 import { NgxTimerModule } from 'ngx-timer';
+import { ModalBoxComponent } from './shared/components/modal-box/modal-box.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StartComponent,
     DashboardComponent,
-    CheckBoxComponent
+    CheckBoxComponent,
+    ModalBoxComponent
   ],
   imports: [
     BrowserModule,

@@ -12,7 +12,7 @@
           class="form-control"
           id="teamMemberInput"
           #teamMemberInput
-          (keydown.enter)="addTeamMember($event)"
+          (keydown.enter)="processTeamMember($event)"
           (keyup.enter)="clearInput()"
         />
       </div>
@@ -24,7 +24,11 @@
     >
       <li
         *ngFor="let teamMember of team"
-        class="list-group-item list-group-item-dark"
+        class="list-group-item list-group-item-dark loading-animation"
+        [ngClass]="{
+          'loading-animation': memberTime && teamMember.id === currentMemberId
+        }"
+        [ngStyle]="memberTime && teamMember.id === currentMemberId && {'animation-duration':animationDuration}"
       >
         <div class="row">
           <div class="col-11">
@@ -62,28 +66,4 @@
   </div>
 </div>
 
-<ng-template #mymodal let-modal>
-  <div class="modal-header">
-    <h4 class="text-danger" class="modal-title">Hi there!</h4>
-    <button
-      type="button"
-      class="close"
-      aria-label="Close"
-      (click)="modalRef.dismiss()"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <p class="text-danger">Hello!</p>
-  </div>
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-outline-dark"
-      (click)="modalRef.dismiss()"
-    >
-      Close
-    </button>
-  </div>
-</ng-template>
+<app-modal-box #genericModal [modalData]="genericModalData"></app-modal-box>

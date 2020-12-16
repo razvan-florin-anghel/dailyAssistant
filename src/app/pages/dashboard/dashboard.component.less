@@ -15,3 +15,18 @@
   transition: all 0.5s linear;
   cursor: pointer;
 }
+
+.loading-animation {
+  background: linear-gradient(to right, #6d466b 50%, transparent 0);
+  background-size: 200% 100%;
+  background-position: right;
+  animation-name: makeItfadeIn;
+  animation-fill-mode: forwards;
+  color: #fff;
+}
+
+@keyframes makeItfadeIn {
+  100% {
+    background-position: left;
+  }
+}

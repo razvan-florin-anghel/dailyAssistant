@@ -11,7 +11,10 @@ import {
   countDownTimerTexts,
 } from "ngx-timer";
 
-import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
+import { Member } from "../../shared/models/member.model";
+import { ModalBoxComponent } from "../../shared/components/modal-box/modal-box.component";
+import { Modal } from "src/app/shared/models/modal.model";
+import { UtilsService } from "../../shared/services/utils.service";
 
 @Component({
   selector: "app-home",
@@ -21,14 +24,32 @@ import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 })
 export class DashboardComponent implements OnInit {
   team: Array<Member> = [];
+  memberTime: number = 0;
+  currentMemberId: string = "";
+  animationDuration: string = "";
+  duplicateNameModalData: Modal = {
+    header: { title: "Duplicate team member name" },
+    body: { text: "Are you sure you want to add a duplicate name?" },
+  };
+  duplicateNameModalWasDisplayed = false;
+
+  teamSizeModalData: Modal = {
+    header: { title: "The team is too big" },
+    body: {
+      text:
+        "I don't know what you're doing but this isn't SCRUM! Are you sure you want to add this team member?",
+    },
+  };
+  teamSizeModalWasDisplayed = false;
+
   testConfig: any;
-  modalRef: NgbModalRef;
+  genericModalData: Modal;
+  @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
-  @ViewChild("mymodal", { static: false }) private mymodal;
 
   constructor(
-    private _countdownTimerService: CountdownTimerService,
-    private _modalService: NgbModal
+    private countdownTimerService: CountdownTimerService,
+    private utilsService: UtilsService
   ) {}
 
   ngOnInit(): void {
@@ -43,37 +64,62 @@ export class DashboardComponent implements OnInit {
    *
    * @param $event
    */
-  addTeamMember($event) {
+  processTeamMember($event) {
     let memberName = $event.target.value;
     if (!memberName) {
       return false;
     }
 
-    if (this.isDupe(memberName)) {
-      setTimeout(() => {
-        this.modalRef = this._modalService.open(this.mymodal);
-      }, 100);
+    let member: Member = { id: uuidv4(), name: memberName };
+
+    if (this.team.length > 29 && !this.teamSizeModalWasDisplayed) {
+      this.showTeamSizeErrorModal(member);
+      return false;
     }
 
-    let member: Member = { id: uuidv4(), name: memberName };
+    if (
+      this.utilsService.memberIsDuplicated(memberName, this.team) &&
+      !this.duplicateNameModalWasDisplayed
+    ) {
+      this.showDuplicateMemberErrorModal(member);
+      return false;
+    }
     this.team.push(member);
   }
-
-  clearInput() {
-    this.teamMemberInput.nativeElement.value = "";
-  }
-
-  dismiss() {
-    this.modalRef.close();
+  /**
+   *
+   * @param member
+   */
+  showTeamSizeErrorModal(member: Member): void {
+    setTimeout(() => {
+      this.genericModalData = this.teamSizeModalData;
+      this.genericModal.openModal().then((data) => {
+        if (data === "confirm") {
+          this.team.push(member);
+          this.duplicateNameModalWasDisplayed = true;
+        }
+      });
+    }, 100);
   }
 
   /**
    *
-   * @param memberName
+   * @param member
    */
-  isDupe(memberName: string): boolean {
-    let dupe = this.team.filter((member) => member.name === memberName);
-    return !!dupe.length;
+  showDuplicateMemberErrorModal(member: Member): void {
+    setTimeout(() => {
+      this.genericModalData = this.duplicateNameModalData;
+      this.genericModal.openModal().then((data) => {
+        if (data === "confirm") {
+          this.team.push(member);
+          this.duplicateNameModalWasDisplayed = true;
+        }
+      });
+    }, 100);
+  }
+
+  clearInput() {
+    this.teamMemberInput.nativeElement.value = "";
   }
 
   /**
@@ -90,19 +136,36 @@ export class DashboardComponent implements OnInit {
   startTimer() {
     this.stopTimer();
     let cdate = new Date();
-    console.log(cdate);
     cdate.setSeconds(cdate.getSeconds() + 900);
-    this._countdownTimerService.startTimer(cdate);
+    console.log(cdate);
+    this.countdownTimerService.startTimer(cdate);
+    this.team = this.team.sort(() => 0.5 - Math.random());
+    this.calculateTimePerMember();
+    this.animationLooper();
   }
   /**
    *
    */
   stopTimer = () => {
-    this._countdownTimerService.stopTimer();
+    this.countdownTimerService.stopTimer();
   };
-}
 
-interface Member {
-  id: any;
-  name: string;
+  calculateTimePerMember() {
+    this.memberTime = 900000 / this.team.length;
+  }
+
+  animationLooper() {
+    let thiz = this;
+    this.currentMemberId = thiz.team[0].id;
+    this.animationDuration =
+      ((this.memberTime % 60000) / 1000).toFixed(0) + "s";
+    for (var i = 1; i < this.team.length; i++) {
+      (function (i, thiz) {
+        setTimeout(function () {
+          console.log(i, thiz.memberTime);
+          thiz.currentMemberId = thiz.team[i].id;
+        }, thiz.memberTime * i);
+      })(i, thiz);
+    }
+  }
 }

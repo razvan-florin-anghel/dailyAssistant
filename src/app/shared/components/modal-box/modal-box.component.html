@@ -1,0 +1,34 @@
+<ng-template #mymodal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title text-danger">
+      {{ modalData.header.title }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modalRef.dismiss('reject')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-danger">{{ modalData.body.text }}</p>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-success"
+      (click)="modalRef.dismiss('confirm')"
+    >
+      Yes
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="modalRef.dismiss('reject')"
+    >
+      Close
+    </button>
+  </div>
+</ng-template>
