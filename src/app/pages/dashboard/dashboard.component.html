@@ -1,10 +1,12 @@
 <div class="row">
-  <div class="col-9">
-    <form>
-      <div
-        [ngClass]="{ 'input-mt': !team.length, 'mt-5': team.length }"
-        class="form-group"
-      >
+  <div class="col-12">
+    <form
+      [@fadeInOnEnter]
+      [@fadeInUp]="team.length"
+      [ngClass]="{ 'input-mt': !team.length, 'mt-3': team.length }"
+      class="input-top-position"
+    >
+      <div class="form-group">
         <input
           placeholder="Add team member"
           autocomplete="off"
@@ -17,25 +19,43 @@
         />
       </div>
     </form>
+
+    <div *ngIf="team.length" [@slideInUpOnEnter] class="text-center mt-5">
+      <button (click)="startTimer()">START</button>
+      <countdown-timer
+        *ngIf="memberTime"
+        [countDownTimerConfig]="testConfig"
+      ></countdown-timer>
+    </div>
+
     <ul
       *ngIf="team.length"
-      [@fadeInOnEnter]
+      [@slideInUpOnEnter]
       class="list-group list-group-flush mt-5"
     >
       <li
-        *ngFor="let teamMember of team"
+        [@fadeInOnEnter]
+        [@fadeOutOnLeave]
+        *ngFor="let teamMember of team | orderBy: order"
         class="list-group-item list-group-item-dark loading-animation"
         [ngClass]="{
           'loading-animation': memberTime && teamMember.id === currentMemberId
         }"
-        [ngStyle]="memberTime && teamMember.id === currentMemberId && {'animation-duration':animationDuration}"
+        [ngStyle]="
+          memberTime &&
+          teamMember.id === currentMemberId && {
+            'animation-duration': animationDuration
+          }
+        "
       >
         <div class="row">
           <div class="col-11">
-            <span>{{ teamMember.name }}</span>
+            <span [ngClass]="{ doneTalking: teamMember.timeExpired === 1 }">
+              {{ teamMember.name }}
+            </span>
           </div>
           <div class="col-1">
-            <span>
+            <span *ngIf="!memberTime">
               <svg
                 width="1em"
                 height="1em"
@@ -60,10 +80,5 @@
       </li>
     </ul>
   </div>
-  <div class="col-3">
-    <button (click)="startTimer()">START</button>
-    <countdown-timer [countDownTimerConfig]="testConfig"></countdown-timer>
-  </div>
 </div>
-
 <app-modal-box #genericModal [modalData]="genericModalData"></app-modal-box>

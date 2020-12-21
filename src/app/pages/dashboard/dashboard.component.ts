@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation,
+  slideInUpOnEnterAnimation,
+  fadeInUpAnimation,
 } from "angular-animations";
 
 import { v4 as uuidv4 } from "uuid";
@@ -15,12 +17,18 @@ import { Member } from "../../shared/models/member.model";
 import { ModalBoxComponent } from "../../shared/components/modal-box/modal-box.component";
 import { Modal } from "src/app/shared/models/modal.model";
 import { UtilsService } from "../../shared/services/utils.service";
+import { OrderPipe } from "ngx-order-pipe";
 
 @Component({
   selector: "app-home",
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.less"],
-  animations: [fadeInOnEnterAnimation(), fadeOutOnLeaveAnimation()],
+  animations: [
+    fadeInOnEnterAnimation(),
+    fadeOutOnLeaveAnimation(),
+    slideInUpOnEnterAnimation(),
+    fadeInUpAnimation(),
+  ],
 })
 export class DashboardComponent implements OnInit {
   team: Array<Member> = [];
@@ -44,21 +52,20 @@ export class DashboardComponent implements OnInit {
 
   testConfig: any;
   genericModalData: Modal;
+  order: string = "timeExpired";
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
 
   constructor(
     private countdownTimerService: CountdownTimerService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private orderPipe: OrderPipe
   ) {}
 
   ngOnInit(): void {
     this.testConfig = new countDownTimerConfigModel();
-    this.testConfig.timerClass = "test_Timer_class";
+    this.testConfig.timerClass = "countdown-timer";
     this.testConfig.timerTexts = new countDownTimerTexts();
-    this.testConfig.timerTexts.hourText = "hh";
-    this.testConfig.timerTexts.minuteText = "mm";
-    this.testConfig.timerTexts.secondsText = "ss";
   }
   /**
    *
@@ -70,7 +77,7 @@ export class DashboardComponent implements OnInit {
       return false;
     }
 
-    let member: Member = { id: uuidv4(), name: memberName };
+    let member: Member = { id: uuidv4(), name: memberName, timeExpired: 0 };
 
     if (this.team.length > 29 && !this.teamSizeModalWasDisplayed) {
       this.showTeamSizeErrorModal(member);
@@ -157,13 +164,14 @@ export class DashboardComponent implements OnInit {
   animationLooper() {
     let thiz = this;
     this.currentMemberId = thiz.team[0].id;
-    this.animationDuration =
-      ((this.memberTime % 60000) / 1000).toFixed(0) + "s";
+    this.animationDuration = (this.memberTime / 1000).toFixed(0) + "s";
+    console.log(this.memberTime, this.animationDuration);
     for (var i = 1; i < this.team.length; i++) {
       (function (i, thiz) {
         setTimeout(function () {
           console.log(i, thiz.memberTime);
           thiz.currentMemberId = thiz.team[i].id;
+          thiz.team[i - 1].timeExpired = 1;
         }, thiz.memberTime * i);
       })(i, thiz);
     }

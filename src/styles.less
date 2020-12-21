@@ -13,3 +13,12 @@ body {
 .no-bg-color {
   background-color: none;
 }
+
+.countdown-timer span:nth-child(1),
+.countdown-timer span.time-category {
+  display: none !important;
+}
+
+.countdown-timer span:nth-child(3)::after{
+  content: ":";
+}
