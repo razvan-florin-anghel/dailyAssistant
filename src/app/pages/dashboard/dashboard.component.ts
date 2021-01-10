@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
     this.testConfig.timerClass = "countdown-timer";
     this.testConfig.timerTexts = new countDownTimerTexts();
     let team = JSON.parse(localStorage.getItem("team"));
-    if (team.length) {
+    if (team && team.length) {
       this.team = team;
     }
   }
