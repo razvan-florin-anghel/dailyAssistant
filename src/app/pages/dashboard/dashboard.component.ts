@@ -18,6 +18,7 @@ import { ModalBoxComponent } from "../../shared/components/modal-box/modal-box.c
 import { Modal } from "src/app/shared/models/modal.model";
 import { UtilsService } from "../../shared/services/utils.service";
 import { OrderPipe } from "ngx-order-pipe";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-home",
@@ -53,6 +54,8 @@ export class DashboardComponent implements OnInit {
   testConfig: any;
   genericModalData: Modal;
   order: string = "timeExpired";
+  buttonText: string = "START";
+  counterSubscribtion = new BehaviorSubject("0");
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
 
@@ -66,6 +69,10 @@ export class DashboardComponent implements OnInit {
     this.testConfig = new countDownTimerConfigModel();
     this.testConfig.timerClass = "countdown-timer";
     this.testConfig.timerTexts = new countDownTimerTexts();
+    let team = JSON.parse(localStorage.getItem("team"));
+    if (team.length) {
+      this.team = team;
+    }
   }
   /**
    *
@@ -92,6 +99,7 @@ export class DashboardComponent implements OnInit {
       return false;
     }
     this.team.push(member);
+    localStorage.setItem("team", JSON.stringify(this.team));
   }
   /**
    *
@@ -137,11 +145,28 @@ export class DashboardComponent implements OnInit {
       return member.id !== memberToBeRemoved.id;
     });
   }
+
+  setAction(action) {
+    if (action === "START") {
+      this.startTimer();
+    } else {
+      this.stopTimer();
+    }
+  }
+
+  resetAllMembersExpiredTimes() {
+    this.team = this.team.map((member) => {
+      member.timeExpired = 0;
+      return member;
+    });
+  }
+
   /**
    *
    */
   startTimer() {
     this.stopTimer();
+    this.buttonText = "STOP";
     let cdate = new Date();
     cdate.setSeconds(cdate.getSeconds() + 900);
     console.log(cdate);
@@ -154,6 +179,11 @@ export class DashboardComponent implements OnInit {
    *
    */
   stopTimer = () => {
+    this.buttonText = "START";
+    this.currentMemberId = "";
+    this.animationDuration = "";
+    this.memberTime = 0;
+    this.resetAllMembersExpiredTimes();
     this.countdownTimerService.stopTimer();
   };
 
@@ -164,14 +194,16 @@ export class DashboardComponent implements OnInit {
   animationLooper() {
     let thiz = this;
     this.currentMemberId = thiz.team[0].id;
-    this.animationDuration = (this.memberTime / 1000).toFixed(0) + "s";
-    console.log(this.memberTime, this.animationDuration);
-    for (var i = 1; i < this.team.length; i++) {
+    this.animationDuration = this.memberTime + "ms";
+    for (var i = 1; i <= this.team.length; i++) {
       (function (i, thiz) {
         setTimeout(function () {
-          console.log(i, thiz.memberTime);
-          thiz.currentMemberId = thiz.team[i].id;
-          thiz.team[i - 1].timeExpired = 1;
+          if (i < thiz.team.length) {
+            thiz.currentMemberId = thiz.team[i].id;
+            thiz.team[i - 1].timeExpired = 1;
+          } else {
+            thiz.stopTimer();
+          }
         }, thiz.memberTime * i);
       })(i, thiz);
     }

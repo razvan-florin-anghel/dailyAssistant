@@ -1,6 +1,7 @@
 <div class="row">
   <div class="col-12">
     <form
+      *ngIf="!memberTime"
       [@fadeInOnEnter]
       [@fadeInUp]="team.length"
       [ngClass]="{ 'input-mt': !team.length, 'mt-3': team.length }"
@@ -21,7 +22,9 @@
     </form>
 
     <div *ngIf="team.length" [@slideInUpOnEnter] class="text-center mt-5">
-      <button (click)="startTimer()">START</button>
+      <button class="main-btn" (click)="setAction(buttonText)">
+        {{ buttonText }}
+      </button>
       <countdown-timer
         *ngIf="memberTime"
         [countDownTimerConfig]="testConfig"
