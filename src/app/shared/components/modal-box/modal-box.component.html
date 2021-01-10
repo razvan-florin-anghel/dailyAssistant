@@ -17,18 +17,20 @@
   </div>
   <div class="modal-footer">
     <button
+      *ngIf="modalData.buttons.yes.enabled"
       type="button"
       class="btn btn-outline-success"
       (click)="modalRef.dismiss('confirm')"
     >
-      Yes
+      {{ modalData.buttons.yes.text }}
     </button>
     <button
+      *ngIf="modalData.buttons.close.enabled"
       type="button"
       class="btn btn-outline-dark"
       (click)="modalRef.dismiss('reject')"
     >
-      Close
+      {{ modalData.buttons.close.text }}
     </button>
   </div>
 </ng-template>

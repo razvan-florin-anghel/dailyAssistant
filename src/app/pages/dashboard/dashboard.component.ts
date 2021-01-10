@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
   animationDuration: string = "";
   duplicateNameModalData: Modal = {
     header: { title: "Duplicate team member name" },
-    body: { text: "Are you sure you want to add a duplicate name?" },
+    body: { text: "Are you sure you want to add a duplicate name?" }
   };
   duplicateNameModalWasDisplayed = false;
 
@@ -51,11 +51,21 @@ export class DashboardComponent implements OnInit {
   };
   teamSizeModalWasDisplayed = false;
 
+  finishModal: Modal = {
+    header: { title: "The daily meeting is done!" },
+    body: { text: "Have a great day!" },
+    buttons: {
+      yes: { enabled: false },
+      close: { enabled: true, text: "Close" },
+    },
+  };
+
   testConfig: any;
   genericModalData: Modal;
   order: string = "timeExpired";
   buttonText: string = "START";
-  counterSubscribtion = new BehaviorSubject("0");
+  counterTime: number = 900;
+
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
 
@@ -86,7 +96,7 @@ export class DashboardComponent implements OnInit {
 
     let member: Member = { id: uuidv4(), name: memberName, timeExpired: 0 };
 
-    if (this.team.length > 29 && !this.teamSizeModalWasDisplayed) {
+    if (this.team.length > 9 && !this.teamSizeModalWasDisplayed) {
       this.showTeamSizeErrorModal(member);
       return false;
     }
@@ -132,6 +142,15 @@ export class DashboardComponent implements OnInit {
       });
     }, 100);
   }
+  /**
+   *
+   */
+  showFinishModal(): void {
+    setTimeout(() => {
+      this.genericModalData = this.finishModal;
+      this.genericModal.openModal();
+    }, 100);
+  }
 
   clearInput() {
     this.teamMemberInput.nativeElement.value = "";
@@ -169,7 +188,6 @@ export class DashboardComponent implements OnInit {
     this.buttonText = "STOP";
     let cdate = new Date();
     cdate.setSeconds(cdate.getSeconds() + 900);
-    console.log(cdate);
     this.countdownTimerService.startTimer(cdate);
     this.team = this.team.sort(() => 0.5 - Math.random());
     this.calculateTimePerMember();
@@ -188,7 +206,7 @@ export class DashboardComponent implements OnInit {
   };
 
   calculateTimePerMember() {
-    this.memberTime = 900000 / this.team.length;
+    this.memberTime = this.counterTime / this.team.length;
   }
 
   animationLooper() {
@@ -203,6 +221,7 @@ export class DashboardComponent implements OnInit {
             thiz.team[i - 1].timeExpired = 1;
           } else {
             thiz.stopTimer();
+            thiz.showFinishModal();
           }
         }, thiz.memberTime * i);
       })(i, thiz);

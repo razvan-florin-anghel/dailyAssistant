@@ -1,4 +1,11 @@
-import { Component, OnInit, ViewChild, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core";
 import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import { Modal } from "../../models/modal.model";
 
@@ -7,18 +14,33 @@ import { Modal } from "../../models/modal.model";
   templateUrl: "./modal-box.component.html",
   styleUrls: ["./modal-box.component.less"],
 })
-export class ModalBoxComponent implements OnInit {
-  @Input() modalData: Modal = {
+export class ModalBoxComponent implements OnInit, OnChanges {
+  private defaultModalData: Modal = {
     header: { title: "" },
     body: { text: "" },
+    buttons: {
+      yes: { enabled: true, text: "Yes" },
+      close: { enabled: true, text: "Close" },
+    },
     payload: null,
   };
+
+  @Input() modalData: Modal = {};
   @ViewChild("mymodal", { static: false }) private mymodal;
   modalRef: NgbModalRef;
 
   constructor(private ModalService: NgbModal) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.modalData = { ...this.defaultModalData, ...this.modalData };
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.modalData = {
+      ...this.defaultModalData,
+      ...changes.modalData.currentValue,
+    };
+  }
   /**
    *
    */
