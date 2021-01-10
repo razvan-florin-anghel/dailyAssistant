@@ -64,7 +64,7 @@ export class DashboardComponent implements OnInit {
   genericModalData: Modal;
   order: string = "timeExpired";
   buttonText: string = "START";
-  counterTime: number = 900;
+  counterTime: number = 90000;
 
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
