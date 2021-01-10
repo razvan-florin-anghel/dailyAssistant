@@ -63,8 +63,8 @@ export class DashboardComponent implements OnInit {
   testConfig: any;
   genericModalData: Modal;
   order: string = "timeExpired";
-  buttonText: string = "START";
-  counterTime: number = 90000;
+  buttonText: string = "START DAILY";
+  counterTime: number = 900000;
 
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit {
   }
 
   setAction(action) {
-    if (action === "START") {
+    if (action === "START DAILY") {
       this.startTimer();
     } else {
       this.stopTimer();
@@ -185,7 +185,7 @@ export class DashboardComponent implements OnInit {
    */
   startTimer() {
     this.stopTimer();
-    this.buttonText = "STOP";
+    this.buttonText = "STOP DAILY";
     let cdate = new Date();
     cdate.setSeconds(cdate.getSeconds() + 900);
     this.countdownTimerService.startTimer(cdate);
@@ -197,7 +197,7 @@ export class DashboardComponent implements OnInit {
    *
    */
   stopTimer = () => {
-    this.buttonText = "START";
+    this.buttonText = "START DAILY";
     this.currentMemberId = "";
     this.animationDuration = "";
     this.memberTime = 0;
