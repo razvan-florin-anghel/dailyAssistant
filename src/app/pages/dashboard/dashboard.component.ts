@@ -19,6 +19,9 @@ import { Modal } from "src/app/shared/models/modal.model";
 import { UtilsService } from "../../shared/services/utils.service";
 import { OrderPipe } from "ngx-order-pipe";
 import { BehaviorSubject } from "rxjs";
+import { ValidationService } from "src/app/shared/services/validation.service";
+import { resolve } from "@angular/compiler-cli/src/ngtsc/file_system";
+import { rejects } from "assert";
 
 @Component({
   selector: "app-home",
@@ -40,7 +43,7 @@ export class DashboardComponent implements OnInit {
     header: { title: "Duplicate team member name" },
     body: { text: "Are you sure you want to add a duplicate name?" }
   };
-  duplicateNameModalWasDisplayed = false;
+  showDuplicateMemberErrorModalDisplayed = false;
 
   teamSizeModalData: Modal = {
     header: { title: "The team is too big" },
@@ -49,7 +52,7 @@ export class DashboardComponent implements OnInit {
         "I don't know what you're doing but this isn't SCRUM! Are you sure you want to add this team member?",
     },
   };
-  teamSizeModalWasDisplayed = false;
+  showTeamSizeErrorModalDisplayed = false;
 
   finishModal: Modal = {
     header: { title: "The daily meeting is done!" },
@@ -65,6 +68,7 @@ export class DashboardComponent implements OnInit {
   order: string = "timeExpired";
   buttonText: string = "START DAILY";
   counterTime: number = 900000;
+  validationSettings = { team: null, memberName: '' };
 
   @ViewChild("genericModal") genericModal: ModalBoxComponent;
   @ViewChild("teamMemberInput") teamMemberInput: ElementRef;
@@ -72,8 +76,9 @@ export class DashboardComponent implements OnInit {
   constructor(
     private countdownTimerService: CountdownTimerService,
     private utilsService: UtilsService,
-    private orderPipe: OrderPipe
-  ) {}
+    private orderPipe: OrderPipe,
+    private validationService: ValidationService
+  ) { }
 
   ngOnInit(): void {
     this.testConfig = new countDownTimerConfigModel();
@@ -88,6 +93,10 @@ export class DashboardComponent implements OnInit {
    *
    * @param $event
    */
+  /**
+   *
+   * @param $event
+   */
   processTeamMember($event) {
     let memberName = $event.target.value;
     if (!memberName) {
@@ -96,14 +105,14 @@ export class DashboardComponent implements OnInit {
 
     let member: Member = { id: uuidv4(), name: memberName, timeExpired: 0 };
 
-    if (this.team.length > 9 && !this.teamSizeModalWasDisplayed) {
+    if (this.team.length > 9 && !this.showTeamSizeErrorModalDisplayed) {
       this.showTeamSizeErrorModal(member);
       return false;
     }
 
     if (
       this.utilsService.memberIsDuplicated(memberName, this.team) &&
-      !this.duplicateNameModalWasDisplayed
+      !this.showDuplicateMemberErrorModalDisplayed
     ) {
       this.showDuplicateMemberErrorModal(member);
       return false;
@@ -111,17 +120,18 @@ export class DashboardComponent implements OnInit {
     this.team.push(member);
     localStorage.setItem("team", JSON.stringify(this.team));
   }
+
   /**
-   *
-   * @param member
-   */
+    *
+    * @param member
+    */
   showTeamSizeErrorModal(member: Member): void {
     setTimeout(() => {
       this.genericModalData = this.teamSizeModalData;
       this.genericModal.openModal().then((data) => {
         if (data === "confirm") {
           this.team.push(member);
-          this.duplicateNameModalWasDisplayed = true;
+          this.showTeamSizeErrorModalDisplayed = true;
         }
       });
     }, 100);
@@ -137,7 +147,7 @@ export class DashboardComponent implements OnInit {
       this.genericModal.openModal().then((data) => {
         if (data === "confirm") {
           this.team.push(member);
-          this.duplicateNameModalWasDisplayed = true;
+          this.showDuplicateMemberErrorModalDisplayed = true;
         }
       });
     }, 100);
@@ -151,20 +161,25 @@ export class DashboardComponent implements OnInit {
       this.genericModal.openModal();
     }, 100);
   }
-
+  /**
+   * 
+   */
   clearInput() {
     this.teamMemberInput.nativeElement.value = "";
   }
-
   /**
    *
    */
-  removeTeamMember(memberToBeRemoved) {
+  removeTeamMember($event) {
+    let idOfMemberToBeRemoved = $event;
     this.team = this.team.filter((member) => {
-      return member.id !== memberToBeRemoved.id;
+      return member.id !== idOfMemberToBeRemoved;
     });
   }
-
+  /**
+   * 
+   * @param action 
+   */
   setAction(action) {
     if (action === "START DAILY") {
       this.startTimer();

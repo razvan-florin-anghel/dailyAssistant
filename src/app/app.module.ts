@@ -15,6 +15,8 @@ import { CheckBoxComponent } from "./shared/components/check-box/check-box.compo
 import { NgxTimerModule } from "ngx-timer";
 import { ModalBoxComponent } from "./shared/components/modal-box/modal-box.component";
 import { OrderModule } from "ngx-order-pipe";
+import { RemoveBtnComponent } from './shared/components/remove-btn/remove-btn.component';
+import { TimerComponent } from './shared/components/timer/timer.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { OrderModule } from "ngx-order-pipe";
     DashboardComponent,
     CheckBoxComponent,
     ModalBoxComponent,
+    RemoveBtnComponent,
+    TimerComponent,
   ],
   imports: [
     BrowserModule,
